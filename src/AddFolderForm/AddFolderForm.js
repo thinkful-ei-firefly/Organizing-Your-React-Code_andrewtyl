@@ -1,4 +1,6 @@
 import React from 'react';
+import config from '../config';
+import cuid from 'cuid';
 
 export default class AddFolderForm extends React.Component {
     static defaultProps = {
@@ -7,7 +9,34 @@ export default class AddFolderForm extends React.Component {
 
     handleNewFolderSubmit = e => {
         e.preventDefault();
-        console.log(e.currentTarget.elements.newFolderNameTextField.value);
+        let newFolderName = e.currentTarget.elements.newFolderNameTextField.value;
+        let newFolderId = cuid();
+
+        let bodyIn = {
+            "id": newFolderId,
+            "name": newFolderName
+        };
+        let bodyOut = JSON.stringify(bodyIn);
+
+        fetch(`${config.API_ENDPOINT}/folders`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: bodyOut
+        })
+            .then(res => {
+                if (!res.ok)
+                    return res.json().then(e => Promise.reject(e))
+                return res.json()
+            })
+            .then({
+                //needs to Link to '/'
+            })
+            .catch(error => {
+                console.error({ error })
+            })
+
     }
 
     render() {
