@@ -33,8 +33,7 @@ export default class AddFolderForm extends React.Component {
                 return res.json()
             })
             .then(data => {
-                console.log(data);
-                console.log(this.context.addFolder(data));
+                this.context.addFolder(data);
                 this.props.history.push('/');
             })
             .catch(error => {

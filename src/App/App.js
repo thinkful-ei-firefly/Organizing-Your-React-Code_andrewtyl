@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {Route, Link} from 'react-router-dom';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import React, { Component } from 'react';
+import { Route, Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import NoteListNav from '../NoteListNav/NoteListNav';
 import NotePageNav from '../NotePageNav/NotePageNav';
 import NoteListMain from '../NoteListMain/NoteListMain';
@@ -9,6 +9,8 @@ import ApiContext from '../ApiContext';
 import config from '../config';
 import './App.css';
 import AddFolderForm from '../AddFolderForm/AddFolderForm';
+import AddNoteForm from '../AddNoteForm/AddNoteForm';
+import ErrorDisplay from '../ErrorDisplay'
 
 class App extends Component {
     state = {
@@ -26,6 +28,16 @@ class App extends Component {
         this.setState(newState);
     }
 
+    handleAddNote = data => {
+        const currentState = this.state;
+        let newState = {
+            notes: currentState.notes,
+            folders: currentState.folders
+        };
+        newState.notes.push(data);
+        this.setState(newState);
+    }
+
 
     componentDidMount() {
         Promise.all([
@@ -33,18 +45,19 @@ class App extends Component {
             fetch(`${config.API_ENDPOINT}/folders`)
         ])
             .then(([notesRes, foldersRes]) => {
-                if (!notesRes.ok)
+                if (!notesRes.ok) {
                     return notesRes.json().then(e => Promise.reject(e));
+                }
                 if (!foldersRes.ok)
                     return foldersRes.json().then(e => Promise.reject(e));
 
                 return Promise.all([notesRes.json(), foldersRes.json()]);
             })
             .then(([notes, folders]) => {
-                this.setState({notes, folders});
+                this.setState({ notes, folders });
             })
             .catch(error => {
-                console.error({error});
+                throw new Error("Error: " + error);
             });
     }
 
@@ -86,7 +99,8 @@ class App extends Component {
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageMain} />
-                <Route path="/add-folder" render={props => <AddFolderForm {...props} handleAdd={this.handleAddFolder}/>} />
+                <Route path="/add-folder" render={props => <AddFolderForm {...props} handleAdd={this.handleAddFolder} />} />
+                <Route path="/add-note" render={props => <AddNoteForm {...props} handleAdd={this.handleAddNote} />} />
             </>
         );
     }
@@ -96,19 +110,21 @@ class App extends Component {
             notes: this.state.notes,
             folders: this.state.folders,
             deleteNote: this.handleDeleteNote,
-            addFolder: this.handleAddFolder
+            addFolder: this.handleAddFolder,
+            addNote: this.handleAddNote
         };
         return (
             <ApiContext.Provider value={value}>
                 <div className="App">
-                    <nav className="App__nav">{this.renderNavRoutes()}</nav>
-                    <header className="App__header">
-                        <h1>
-                            <Link to="/">Noteful</Link>{' '}
-                            <FontAwesomeIcon icon="check-double" />
-                        </h1>
-                    </header>
-                    <main className="App__main">{this.renderMainRoutes()}</main>
+                    <ErrorDisplay />
+                        <nav className="App__nav">{this.renderNavRoutes()}</nav>
+                        <header className="App__header">
+                            <h1>
+                                <Link to="/">Noteful</Link>{' '}
+                                <FontAwesomeIcon icon="check-double" />
+                            </h1>
+                        </header>
+                        <main className="App__main">{this.renderMainRoutes()}</main>
                 </div>
             </ApiContext.Provider>
         );
