@@ -1,11 +1,13 @@
 import React from 'react';
 import config from '../config';
 import cuid from 'cuid';
+import ApiContext from '../ApiContext'
 
 export default class AddFolderForm extends React.Component {
-    static defaultProps = {
-
-    }
+    static defaultProps ={
+        onAddFolder: () => {},
+      }
+      static contextType = ApiContext;
 
     handleNewFolderSubmit = e => {
         e.preventDefault();
@@ -30,8 +32,10 @@ export default class AddFolderForm extends React.Component {
                     return res.json().then(e => Promise.reject(e))
                 return res.json()
             })
-            .then({
-                //needs to Link to '/'
+            .then(data => {
+                console.log(data);
+                console.log(this.context.addFolder(data));
+                this.props.history.push('/');
             })
             .catch(error => {
                 console.error({ error })
