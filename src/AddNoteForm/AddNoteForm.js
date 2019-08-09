@@ -1,7 +1,8 @@
 import React from 'react';
 import config from '../config';
 import cuid from 'cuid';
-import ApiContext from '../ApiContext'
+import ApiContext from '../ApiContext';
+import './AddNoteForm.css';
 
 export default class AddNoteForm extends React.Component {
     static defaultProps ={
@@ -44,7 +45,7 @@ export default class AddNoteForm extends React.Component {
                 this.props.history.push('/');
             })
             .catch(error => {
-                console.error({ error })
+                throw new Error("Error: " + error);
             })
 
     }
@@ -56,15 +57,15 @@ export default class AddNoteForm extends React.Component {
                 <h2>Add Note</h2>
                 <form name="newNoteForm" onSubmit={this.handleNewNoteSubmit}>
                     <label htmlFor="newNoteName">New Note Name</label>
-                    <input type="text" name="newNoteNameTextField"></input>
+                    <input type="text" name="newNoteNameTextField" required></input><br/>
                     <label htmlFor="newNoteContent">New Note Content</label>
-                    <input type="text" name="newNoteContentTextField"></input>
+                    <input type="text" name="newNoteContentTextField" required></input><br/>
                     <label htmlFor="newNoteFolder">New Note Folder</label>
                     <select name="newNoteFolderField">
                         {this.context.folders.map(folder =>
                             <option key={folder.id} value={folder.id}>{folder.name}</option>
                             )}
-                    </select>
+                    </select><br/>
                     <button type="submit">Submit</button>
                 </form>
             </div>

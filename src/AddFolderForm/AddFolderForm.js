@@ -2,6 +2,7 @@ import React from 'react';
 import config from '../config';
 import cuid from 'cuid';
 import ApiContext from '../ApiContext'
+import "./AddFolderForm.css"
 
 export default class AddFolderForm extends React.Component {
     static defaultProps ={
@@ -12,6 +13,7 @@ export default class AddFolderForm extends React.Component {
     handleNewFolderSubmit = e => {
         e.preventDefault();
         let newFolderName = e.currentTarget.elements.newFolderNameTextField.value;
+
         let newFolderId = cuid();
 
         let bodyIn = {
@@ -37,7 +39,7 @@ export default class AddFolderForm extends React.Component {
                 this.props.history.push('/');
             })
             .catch(error => {
-                console.error({ error })
+                throw new Error("Error: " + error);
             })
 
     }
@@ -47,9 +49,9 @@ export default class AddFolderForm extends React.Component {
             <div>
                 <h2>Add Folder</h2>
                 <form name="newFolderForm" onSubmit={this.handleNewFolderSubmit}>
-                    <label htmlFor="newFolderName">New Folder Name</label>
-                    <input type="text" name="newFolderNameTextField"></input>
-                    <button type="submit">Submit</button>
+                    <label htmlFor="newFolderName">New Folder Name</label><br/>
+                    <input type="text" name="newFolderNameTextField" required></input><br/>
+                    <button type="submit">Submit</button><br/>
                 </form>
             </div>
         )
